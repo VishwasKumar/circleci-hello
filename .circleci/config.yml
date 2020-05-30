@@ -15,11 +15,11 @@ jobs:
       - store_artifacts:
           path: ./circleci-hello # executable
 
-  test:
-    docker:
-      - image: circleci/golang:1.11.1
-    working_directory: /go/src/github.com/Static-Void-Academy/circleci-hello
-    steps:
-      - checkout # Checks out the source code
-      - run: go get -d ./...
-      - run: go test
+test:
+  docker:
+    - image: circleci/golang:1.11.1
+  working_directory: /go/src/github.com/Static-Void-Academy/circleci-hello
+  steps:
+    - checkout # Checks out the source code
+    - run: go get -d ./...
+    - run: go test
