@@ -4,7 +4,7 @@ executors:
   my-go-executor:
     docker:
       - image: circleci/golang:1.11.1
-    working_directory: /go/src/github.com/Static-Void-Academy/circleci-hello/src/app
+    working_directory: /go/src/github.com/Static-Void-Academy/circleci-hello
 commands:
   get-go-deps:
     description: Get go modules / dependencies
@@ -29,7 +29,7 @@ jobs:
           name: Build the executable
           command: |
             echo "Other important command here as example"
-            go build
+            go build ./src/app
       - persist_to_workspace:
           root: .
           paths: ./*
@@ -42,4 +42,4 @@ jobs:
           at: .
       - checkout
       - get-go-deps         # See common
-      - run: go test
+      - run: go test ./src/app
