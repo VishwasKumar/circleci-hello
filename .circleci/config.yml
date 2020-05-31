@@ -4,7 +4,7 @@ executors:
   my-go-executor:
     docker:
       - image: circleci/golang:1.11.1
-    working_directory: /go/src/github.com/Static-Void-Academy/circleci-hello
+    working_directory: /go/src/github.com/Static-Void-Academy/circleci-hello/src/app
 commands:
   get-go-deps:
     description: Get go modules / dependencies
