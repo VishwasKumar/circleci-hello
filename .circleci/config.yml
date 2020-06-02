@@ -1,45 +1,107 @@
-# Top of file
-# Common config
+version: 2.1 # !!!! IMPORTANT !!!! MUST USE 2.1 CONFIG
+
+
+# custom pipeline parameters that can be provided when making API calls to CircleCI. The trigger parameter is needed
+# to instruct CircleCI to always start (default: true) the workflow that checks for changes, but to be able to skip it
+# when triggering pipeline for other workflows. To start the workflow depending on a pipeline parameter, we use the
+# when clause in the workflow definition.
+parameters:
+  # By default we enable the main workflow
+  trigger:
+    type: boolean
+    default: true
+  # Add a boolean parameter on each package.
+  app:
+    type: boolean
+    default: false
+  admin:
+    type: boolean
+    default: false
+
+
 executors:
   my-go-executor:
     docker:
       - image: circleci/golang:1.11.1
     working_directory: /go/src/github.com/Static-Void-Academy/circleci-hello
+
+
 commands:
   get-go-deps:
     description: Get go modules / dependencies
     steps:
       - run: go get -d ./...
-version: 2.1 # !!!! IMPORTANT !!!! MUST USE 2.1 CONFIG
+
+
 workflows:
   version: 2
-  build_test:
+  app:
+    when: << pipeline.parameters.app >>
     jobs:
-      - build
+      - build:
+          name: app-build
+          package_name: app
       - test:
+          name: app-test
+          package_name: app
           requires:
             - build
+  admin:
+    when: << pipeline.parameters.admin >>
+    jobs:
+      - build:
+          name: admin-build
+          package_name: admin
+      - test:
+          name: admin-build
+          package_name: admin
+          requires:
+            - build
+
+  trigger:
+    when: << pipeline.parameters.trigger >>
+    jobs:
+      - trigger-workflows
+
+
 jobs:
-  build:
+  trigger-workflows:
     executor: my-go-executor
     steps:
       - checkout
-      - get-go-deps         # See common
+      - run:
+          name: trigger workflows
+          command: chmod +x ./.circleci/ci_trigger.sh && ./.circleci/ci_trigger.sh
+
+  build:
+    parameters:
+      package_name:
+        type: string
+
+    executor: my-go-executor
+    steps:
+      - checkout
+      - get-go-deps
       - run:
           name: Build the executable
           command: |
             echo "Other important command here as example"
-            go build ./src/app
+            go build ./src/<< parameters.package_name >>
       - persist_to_workspace:
           root: .
           paths: ./*
       - store_artifacts:
           path: ./circleci-hello
+
   test:
+    parameters:
+      package_name:
+        type: string
+
     executor: my-go-executor
     steps:
       - attach_workspace:
           at: .
       - checkout
-      - get-go-deps         # See common
-      - run: go test ./src/app
+      - get-go-deps
+      - run: go test ./src/<< parameters.package_name >>
