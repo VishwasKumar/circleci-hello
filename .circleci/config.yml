@@ -39,10 +39,10 @@ workflows:
     when: << pipeline.parameters.app >>
     jobs:
       - build:
-          name: app-build
+          name: build
           package_name: app
       - test:
-          name: app-test
+          name: test
           package_name: app
           requires:
             - build
@@ -50,10 +50,10 @@ workflows:
     when: << pipeline.parameters.admin >>
     jobs:
       - build:
-          name: admin-build
+          name: build
           package_name: admin
       - test:
-          name: admin-build
+          name: test
           package_name: admin
           requires:
             - build
