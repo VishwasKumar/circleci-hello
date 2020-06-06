@@ -5,7 +5,7 @@ import (
 )
 
 func GetHello() string {
-  return "Hello World From Admin!!"
+  return "Hello World From Admin!"
 }
 
 func main() {
