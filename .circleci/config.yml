@@ -41,6 +41,10 @@ workflows:
       - build:
           name: build
           package_name: app
+      - hold:
+          type: approval
+          requires:
+            - build
       - test:
           name: test
           package_name: app
